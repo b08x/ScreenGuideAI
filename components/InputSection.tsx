@@ -303,6 +303,26 @@ export const InputSection: React.FC<InputSectionProps> = ({
             Knowledge Base Article
           </button>
         </div>
+        <div className="mt-4 p-4 bg-gray-900/50 rounded-lg border border-gray-700 text-xs text-gray-400">
+            <h4 className="font-semibold text-sm text-gray-300 mb-2">Format Preview</h4>
+            {outputFormat === 'guide' ? (
+                <div key="guide-preview" className="space-y-1 animate-fade-in-subtle">
+                    <p className="font-mono">1. **Step Title**</p>
+                    <p className="font-mono pl-4">Clear, concise instruction for the first action.</p>
+                    <p className="font-mono pl-4">[Image: Screenshot of the relevant UI.]</p>
+                    <p className="font-mono">2. **Another Step**</p>
+                    <p className="font-mono pl-4">Description of what to do next, referencing UI elements like `( Save )`.</p>
+                </div>
+            ) : (
+                <div key="article-preview" className="space-y-1 animate-fade-in-subtle">
+                    <p className="font-mono">## Feature Overview</p>
+                    <p className="font-mono">A high-level summary of the feature or process.</p>
+                    <p className="font-mono">### Key Functionality</p>
+                    <p className="font-mono">- Bullet point explaining a core concept.</p>
+                    <p className="font-mono">- Another point using `backticks` for technical details.</p>
+                </div>
+            )}
+        </div>
       </div>
       
       <div className="flex-grow flex items-end">
@@ -328,7 +348,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
   );
 };
 
-const fadeAnimation = `
+const animations = `
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -336,8 +356,15 @@ const fadeAnimation = `
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
 }
+@keyframes fadeInSubtle {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in-subtle {
+  animation: fadeInSubtle 0.4s ease-out forwards;
+}
 `;
 
 const styleSheet = document.createElement("style");
-styleSheet.innerText = fadeAnimation;
+styleSheet.innerText = animations;
 document.head.appendChild(styleSheet);
