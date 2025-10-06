@@ -1,0 +1,9 @@
+{
+  "name": "ScreenGuide: Screencast to Text AI",
+  "description": "An AI agent that transforms screen recordings into step-by-step guides and knowledge base articles. Upload a video, provide context, and let the AI generate clear, concise documentation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ]
+}
