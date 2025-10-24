@@ -47,6 +47,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
   onGenerate,
 }) => {
   const [inputType, setInputType] = useState<'upload' | 'record'>('upload');
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // State and refs for voice input
   const [isMicRecording, setIsMicRecording] = useState(false);
@@ -56,9 +58,49 @@ export const InputSection: React.FC<InputSectionProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const validateAndSetFile = (file: File) => {
+    setUploadError(null);
+    const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
+
+    if (!file.type.startsWith('video/')) {
+      setUploadError('Invalid file type. Please upload a video file.');
+      return;
+    }
+    
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError('File exceeds 500MB limit. Please choose a smaller video.');
+      return;
+    }
+    
+    setVideoFile(file);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setVideoFile(e.target.files[0]);
+      validateAndSetFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+  
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      validateAndSetFile(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
     }
   };
 
@@ -168,7 +210,11 @@ export const InputSection: React.FC<InputSectionProps> = ({
         </div>
 
         {inputType === 'upload' ? (
-           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-600 px-6 py-10 hover:border-indigo-400 transition-colors">
+           <div 
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 transition-colors ${isDragging ? 'border-indigo-400 bg-gray-800/50' : 'border-gray-600 hover:border-indigo-400'}`}>
               <div className="text-center">
                 <UploadIcon className="mx-auto h-12 w-12 text-gray-500" aria-hidden="true" />
                 <div className="mt-4 flex text-sm leading-6 text-gray-400">
@@ -181,7 +227,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs leading-5 text-gray-500">MP4, AVI, MOV up to 500MB</p>
+                <p className="text-xs leading-5 text-gray-500">Video files up to 500MB</p>
+                {uploadError && <p className="mt-2 text-xs text-red-400">{uploadError}</p>}
               </div>
             </div>
         ) : (

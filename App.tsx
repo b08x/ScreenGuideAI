@@ -58,7 +58,7 @@ const App: React.FC = () => {
     setGeneratedOutput('');
 
     try {
-      const result = await generateGuide(userPrompt, outputFormat, videoFile.name, videoDescription, transcribedText);
+      const result = await generateGuide(userPrompt, outputFormat, videoFile.name, videoDescription, transcribedText, videoFile);
       setGeneratedOutput(result);
     } catch (e: unknown) {
       if (e instanceof Error) {
